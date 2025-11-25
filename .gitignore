@@ -1,0 +1,78 @@
+###############################
+# TERRAFORM
+###############################
+
+# Local Terraform directories
+.terraform/
+.terraform.lock.hcl
+
+# Terraform state files
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.*
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Modules build artifacts
+*.tfplan
+
+###############################
+# ENVIRONMENTS
+###############################
+
+# Ignore .terraform folders inside envs
+envs/*/.terraform/
+envs/*/.terraform.lock.hcl
+envs/*/*.tfstate
+envs/*/*.tfstate.backup
+envs/*/crash.log
+
+###############################
+# AWS CREDENTIALS
+###############################
+
+# AWS CLI credentials should NOT be in repo
+.aws/
+*.pem
+*.key
+
+###############################
+# EDITOR / SYSTEM FILES
+###############################
+
+*.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+###############################
+# LOG FILES
+###############################
+
+*.log
+
+###############################
+# PYTHON (if you ever add scripts)
+###############################
+
+__pycache__/
+*.pyc
+
+###############################
+# BASH / ENV FILES
+###############################
+
+*.env
+*.sh~
+
+###############################
+# ZIP FILES / ARTIFACT BUILDS
+###############################
+
+*.zip
+*.tar
+*.tar.gz
