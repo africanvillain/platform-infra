@@ -1,0 +1,47 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  terraform:
+    name: Terraform Pipeline
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        working-directory: envs/dev
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: envs/dev
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: envs/dev
+        run: terraform plan
+
+      # Uncomment this when ready for auto-apply
+      # - name: Terraform Apply
+      #   working-directory: envs/dev
+      #   run: terraform apply -auto-approve
+      #   if: github.ref == 'refs/heads/main'
