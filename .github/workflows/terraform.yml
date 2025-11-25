@@ -39,9 +39,3 @@ jobs:
       - name: Terraform Plan
         working-directory: envs/dev
         run: terraform plan
-
-      # Uncomment this when ready for auto-apply
-      # - name: Terraform Apply
-      #   working-directory: envs/dev
-      #   run: terraform apply -auto-approve
-      #   if: github.ref == 'refs/heads/main'
