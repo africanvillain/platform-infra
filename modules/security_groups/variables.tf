@@ -1,5 +1,7 @@
-variable "env" {}
+variable "env" {
+  type = string
+}
 
-variable "vpc_id" {}
-variable "vpc_cidr" {}
-variable "my_ip" {}
+variable "vpc_id" {
+  type = string
+}

@@ -1,17 +1,11 @@
-variable "env" {}
-
-variable "ami_id" {}
-
-variable "instance_type" {
-  default = "t2.micro"
+variable "env" {
+  type = string
 }
 
-variable "subnet_id" {}
-
-variable "security_group_ids" {
-  type = list(string)
+variable "private_subnet_id" {
+  type = string
 }
 
-variable "user_data" {
-  default = ""
+variable "ec2_sg_id" {
+  type = string
 }

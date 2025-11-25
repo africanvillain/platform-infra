@@ -1,7 +1,3 @@
-###############################
-# INTERNET GATEWAY
-###############################
-
 resource "aws_internet_gateway" "igw" {
   vpc_id = var.vpc_id
 
@@ -10,10 +6,6 @@ resource "aws_internet_gateway" "igw" {
     Env  = var.env
   }
 }
-
-###############################
-# NAT GATEWAY (IN FIRST PUBLIC SUBNET)
-###############################
 
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
@@ -36,10 +28,6 @@ resource "aws_nat_gateway" "nat" {
   depends_on = [aws_internet_gateway.igw]
 }
 
-###############################
-# PUBLIC ROUTE TABLE
-###############################
-
 resource "aws_route_table" "public" {
   vpc_id = var.vpc_id
 
@@ -60,10 +48,6 @@ resource "aws_route_table_association" "public_subnets" {
   subnet_id      = var.public_subnet_ids[count.index]
   route_table_id = aws_route_table.public.id
 }
-
-###############################
-# PRIVATE ROUTE TABLE
-###############################
 
 resource "aws_route_table" "private" {
   vpc_id = var.vpc_id

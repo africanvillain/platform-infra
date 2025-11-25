@@ -91,15 +91,17 @@ module "alb" {
 module "artifacts_bucket" {
   source = "../../modules/S3"
 
-  env               = "dev"
-  name              = "artifacts"
-  expiration_days   = 30
+  env           = "dev"
+  name          = "artifacts"
+  unique_suffix = "alex01"
+  expiration_days = 30
 }
 
 module "logs_bucket" {
   source = "../../modules/S3"
 
-  env               = "dev"
-  name              = "logs"
-  expiration_days   = 30
+  env           = "dev"
+  name          = "logs"
+  unique_suffix = "alex01"
+  expiration_days = 30
 }

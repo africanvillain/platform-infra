@@ -1,5 +1,7 @@
-variable "env" {}
+variable "env" {
+  type = string
+}
 
 variable "cidr" {
-  description = "VPC CIDR range"
+  type = string
 }

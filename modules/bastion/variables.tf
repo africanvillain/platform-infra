@@ -1,13 +1,11 @@
-variable "env" {}
-
-variable "ami_id" {}
-variable "instance_type" {
-  default = "t2.micro"
+variable "env" {
+  type = string
 }
 
-variable "public_subnet_id" {}
-variable "bastion_sg_id" {}
+variable "public_subnet_id" {
+  type = string
+}
 
-variable "user_data" {
-  default = ""
+variable "bastion_sg_id" {
+  type = string
 }

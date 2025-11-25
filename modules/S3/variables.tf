@@ -7,7 +7,7 @@ variable "name" {
 }
 
 variable "unique_suffix" {
-  type = string
+  type        = string
   description = "Globally-unique suffix to avoid S3 bucket name conflicts"
 }
 

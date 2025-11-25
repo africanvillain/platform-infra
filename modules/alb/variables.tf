@@ -1,11 +1,19 @@
-variable "env" {}
+variable "env" {
+  type = string
+}
 
-variable "vpc_id" {}
+variable "vpc_id" {
+  type = string
+}
+
+variable "alb_sg_id" {
+  type = string
+}
 
 variable "public_subnets" {
   type = list(string)
 }
 
-variable "alb_sg_id" {}
-
-variable "target_instance_id" {}
+variable "target_instance_id" {
+  type = string
+}
