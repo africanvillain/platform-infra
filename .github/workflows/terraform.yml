@@ -30,7 +30,7 @@ jobs:
 
       - name: Terraform Init
         working-directory: envs/dev
-        run: terraform init
+        run: terraform init -input=false
 
       - name: Terraform Validate
         working-directory: envs/dev
@@ -38,4 +38,4 @@ jobs:
 
       - name: Terraform Plan
         working-directory: envs/dev
-        run: terraform plan
+        run: terraform plan -input=false
