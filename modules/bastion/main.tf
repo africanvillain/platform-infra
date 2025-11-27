@@ -1,11 +1,16 @@
 data "aws_ami" "ubuntu" {
   most_recent = true
 
-  owners = ["099720109477"] # Canonical
+  owners = ["099720109477"] # Canonical Ubuntu owner ID
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
   }
 }
 
@@ -15,9 +20,6 @@ resource "aws_instance" "bastion" {
   subnet_id                   = var.public_subnet_id
   vpc_security_group_ids      = [var.bastion_sg_id]
   associate_public_ip_address = true
-
-  # ❌ REMOVE availability_zone (Terraform will auto-pick from subnet)
-  # availability_zone = "us-east-1e"
 
   tags = {
     Name = "dev-bastion"
