@@ -9,6 +9,7 @@ variable "name" {
 variable "unique_suffix" {
   type        = string
   description = "Globally-unique suffix to avoid S3 bucket name conflicts"
+  default     = "alex01"
 }
 
 variable "expiration_days" {

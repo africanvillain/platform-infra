@@ -1,6 +1,6 @@
-##############################
-# S3 BUCKET
-##############################
+############################################
+# S3 BUCKET MODULE
+############################################
 
 resource "aws_s3_bucket" "this" {
   bucket = "${var.env}-${var.name}-${var.unique_suffix}"
@@ -11,9 +11,9 @@ resource "aws_s3_bucket" "this" {
   }
 }
 
-##############################
+############################################
 # BLOCK PUBLIC ACCESS
-##############################
+############################################
 
 resource "aws_s3_bucket_public_access_block" "this" {
   bucket                  = aws_s3_bucket.this.id
@@ -23,9 +23,9 @@ resource "aws_s3_bucket_public_access_block" "this" {
   restrict_public_buckets = true
 }
 
-##############################
+############################################
 # VERSIONING
-##############################
+############################################
 
 resource "aws_s3_bucket_versioning" "this" {
   bucket = aws_s3_bucket.this.id
@@ -35,9 +35,9 @@ resource "aws_s3_bucket_versioning" "this" {
   }
 }
 
-##############################
+############################################
 # ENCRYPTION (SSE-S3)
-##############################
+############################################
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
   bucket = aws_s3_bucket.this.id
@@ -49,9 +49,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
   }
 }
 
-##############################
-# LIFECYCLE
-##############################
+############################################
+# LIFECYCLE RULE
+############################################
 
 resource "aws_s3_bucket_lifecycle_configuration" "this" {
   bucket = aws_s3_bucket.this.id
