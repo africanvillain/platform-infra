@@ -18,6 +18,7 @@ resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t3.micro"
   subnet_id                   = var.public_subnet_id
+  availability_zone           = "us-east-1a"          # <--- FORCE FIX
   vpc_security_group_ids      = [var.bastion_sg_id]
   associate_public_ip_address = true
 
