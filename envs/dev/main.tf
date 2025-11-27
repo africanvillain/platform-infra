@@ -16,8 +16,8 @@ module "vpc" {
 module "subnets" {
   source = "../../modules/subnets"
 
-  env                 = "dev"
-  vpc_id              = module.vpc.vpc_id
+  env                  = "dev"
+  vpc_id               = module.vpc.vpc_id
   public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
   private_subnet_cidrs = ["10.0.3.0/24", "10.0.4.0/24"]
 }
@@ -51,11 +51,11 @@ module "security_groups" {
 ###########################################
 
 module "ec2" {
-  source = "../../modules/ec2"   # <--- FIXED (lowercase)
+  source = "../../modules/ec2" # <--- FIXED (lowercase)
 
-  env              = "dev"
+  env               = "dev"
   private_subnet_id = module.subnets.private_subnets[0]
-  ec2_sg_id        = module.security_groups.private_sg_id
+  ec2_sg_id         = module.security_groups.private_sg_id
 }
 
 ###########################################
@@ -65,9 +65,9 @@ module "ec2" {
 module "bastion" {
   source = "../../modules/bastion"
 
-  env             = "dev"
+  env              = "dev"
   public_subnet_id = module.subnets.public_subnets[0]
-  bastion_sg_id   = module.security_groups.bastion_sg_id
+  bastion_sg_id    = module.security_groups.bastion_sg_id
 }
 
 ###########################################
@@ -77,10 +77,10 @@ module "bastion" {
 module "alb" {
   source = "../../modules/alb"
 
-  env             = "dev"
-  vpc_id          = module.vpc.vpc_id
-  alb_sg_id       = module.security_groups.public_sg_id
-  public_subnets  = module.subnets.public_subnets
+  env                = "dev"
+  vpc_id             = module.vpc.vpc_id
+  alb_sg_id          = module.security_groups.public_sg_id
+  public_subnets     = module.subnets.public_subnets
   target_instance_id = module.ec2.instance_id
 }
 
@@ -91,17 +91,17 @@ module "alb" {
 module "artifacts_bucket" {
   source = "../../modules/S3"
 
-  env           = "dev"
-  name          = "artifacts"
-  unique_suffix = "alex01"
+  env             = "dev"
+  name            = "artifacts"
+  unique_suffix   = "alex01"
   expiration_days = 30
 }
 
 module "logs_bucket" {
   source = "../../modules/S3"
 
-  env           = "dev"
-  name          = "logs"
-  unique_suffix = "alex01"
+  env             = "dev"
+  name            = "logs"
+  unique_suffix   = "alex01"
   expiration_days = 30
 }
