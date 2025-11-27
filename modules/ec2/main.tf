@@ -1,30 +1,25 @@
-data "aws_ami" "amazon_linux_2" {
+data "aws_ami" "ubuntu" {
   most_recent = true
 
-  owners = ["amazon"]
+  owners = ["099720109477"] # Canonical Ubuntu
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-*"]
   }
 }
 
 resource "aws_instance" "server" {
-  ami                    = data.aws_ami.amazon_linux_2.id
+  ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t3.micro"
   subnet_id              = var.private_subnet_id
   vpc_security_group_ids = [var.ec2_sg_id]
 
-  # if you don't want userdata, you can comment this out
-  user_data = file("${path.module}/../../envs/dev/userdata.sh")
+  # ❌ REMOVE availability_zone entirely
+  # availability_zone = "us-east-1e"
 
   tags = {
-    Name = "${var.env}-app-server"
+    Name = "dev-server"
     Env  = var.env
   }
 }
