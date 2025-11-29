@@ -10,7 +10,7 @@ module "vpc" {
 }
 
 ###########################################
-# SUBNETS
+# SUBNETS (FORCED AZ FIX)
 ###########################################
 
 module "subnets" {
@@ -47,11 +47,11 @@ module "security_groups" {
 }
 
 ###########################################
-# EC2 INSTANCE (PRIVATE SERVER)
+# PRIVATE EC2 INSTANCE
 ###########################################
 
 module "ec2" {
-  source = "../../modules/ec2" # <--- FIXED (lowercase)
+  source = "../../modules/ec2"
 
   env               = "dev"
   private_subnet_id = module.subnets.private_subnets[0]

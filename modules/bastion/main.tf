@@ -1,29 +1,38 @@
-data "aws_ami" "ubuntu" {
+#############################################
+# BASTION MODULE
+#############################################
+
+
+# Latest Amazon Linux 2 x86_64 in us-east-1
+data "aws_ami" "amazon_linux" {
   most_recent = true
 
-  owners = ["099720109477"] # Canonical Ubuntu owner ID
+  owners = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
   }
 
   filter {
-    name   = "architecture"
-    values = ["x86_64"]
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
 
 resource "aws_instance" "bastion" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t3.micro"
-  subnet_id                   = var.public_subnet_id
-  availability_zone           = "us-east-1a"          # <--- FORCE FIX
-  vpc_security_group_ids      = [var.bastion_sg_id]
+  ami                    = data.aws_ami.amazon_linux.id
+  instance_type          = "t3.micro"
+
+  subnet_id              = var.public_subnet_id
+  vpc_security_group_ids = [var.bastion_sg_id]
+
   associate_public_ip_address = true
 
   tags = {
-    Name = "dev-bastion"
+    Name = "${var.env}-bastion"
     Env  = var.env
   }
+
+  user_data = file("${path.module}/../../envs/dev/userdata_bastion.sh")
 }

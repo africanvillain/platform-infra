@@ -1,28 +1,38 @@
-data "aws_ami" "ubuntu" {
+#############################################
+# EC2 MODULE (PRIVATE SERVER)
+#############################################
+
+
+# Latest Amazon Linux 2 x86_64 in us-east-1
+data "aws_ami" "amazon_linux" {
   most_recent = true
 
-  owners = ["099720109477"]
+  owners = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
   }
 
   filter {
-    name   = "architecture"
-    values = ["x86_64"]
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
 
 resource "aws_instance" "server" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t3.micro"
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = "t3.micro"
+
   subnet_id              = var.private_subnet_id
-  availability_zone      = "us-east-1b"    # <--- FORCE FIX (private subnet)
   vpc_security_group_ids = [var.ec2_sg_id]
 
+  associate_public_ip_address = false
+
   tags = {
-    Name = "dev-server"
+    Name = "${var.env}-private-ec2"
     Env  = var.env
   }
+
+  user_data = file("${path.module}/../../envs/dev/userdata.sh")
 }
