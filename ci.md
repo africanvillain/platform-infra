@@ -6,3 +6,4 @@ trigger again
 run ci Thu, Nov 27, 2025  1:24:53 AM
 cache fix
 # trigger
+fix creds
