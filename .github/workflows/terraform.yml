@@ -2,13 +2,11 @@ name: Terraform CI/CD
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
 
 jobs:
   terraform:
-    name: Terraform Pipeline
     runs-on: ubuntu-latest
 
     env:
@@ -17,7 +15,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Clean Terraform cache
@@ -28,7 +26,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.6.0"
+          terraform_version: 1.6.0
 
       - name: Terraform Init
         working-directory: envs/dev
@@ -43,6 +41,41 @@ jobs:
         run: terraform plan
 
       - name: Terraform Apply
-        working-directory: envs/dev
         if: github.ref == 'refs/heads/main'
+        working-directory: envs/dev
         run: terraform apply -auto-approve
+
+
+      ################################################
+      # 🔥 PASTE WAS HERE: Terraform Outputs
+      ################################################
+
+      - name: Terraform Output
+        id: tf_output
+        working-directory: envs/dev
+        run: echo "ecr_repo=$(terraform output -raw ecr_repo)" >> $GITHUB_OUTPUT
+
+
+      ################################################
+      # DOCKER → ECR PUSH SECTION
+      ################################################
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push Docker Image
+        working-directory: app
+        env:
+          REPO: ${{ steps.tf_output.outputs.ecr_repo }}
+        run: |
+          IMAGE_TAG=$(date +%s)
+          docker build -t $REPO:$IMAGE_TAG .
+          docker push $REPO:$IMAGE_TAG
+

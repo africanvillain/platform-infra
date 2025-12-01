@@ -55,3 +55,8 @@ output "artifacts_bucket" {
 output "logs_bucket" {
   value = module.logs_bucket.bucket_id
 }
+
+
+output "ecr_repo" {
+  value = module.ecr.repository_url
+}
