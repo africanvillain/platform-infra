@@ -22,6 +22,9 @@ module "subnets" {
   private_subnet_cidrs = ["10.0.3.0/24", "10.0.4.0/24"]
 }
 
+
+
+
 ###########################################
 # NETWORKING (IGW, NAT, Routes)
 ###########################################
@@ -104,4 +107,16 @@ module "logs_bucket" {
   name            = "logs"
   unique_suffix   = "alex01"
   expiration_days = 30
+}
+
+
+###########################################
+# ECR (for Docker images)
+###########################################
+
+module "ecr" {
+  source = "../../modules/ecr"
+
+  env  = "dev"
+  name = "app"
 }

@@ -2,19 +2,18 @@
 # SUBNETS MODULE
 #############################################
 
-variable "env" {}
-variable "vpc_id" {}
-variable "public_subnet_cidrs" { type = list(string) }
-variable "private_subnet_cidrs" { type = list(string) }
-
 # Ask AWS for all AZs your account supports
 data "aws_availability_zones" "available" {
   state = "available"
 }
 
 locals {
-  # Use the first N AZs your account supports
-  azs = slice(data.aws_availability_zones.available.names, 0, length(var.public_subnet_cidrs))
+  # Use the first N AZs based on number of subnets
+  azs = slice(
+    data.aws_availability_zones.available.names,
+    0,
+    length(var.public_subnet_cidrs)
+  )
 }
 
 #############################################
