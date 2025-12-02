@@ -85,7 +85,11 @@ module "alb" {
   alb_sg_id          = module.security_groups.public_sg_id
   public_subnets     = module.subnets.public_subnets
   target_instance_id = module.ec2.instance_id
+
+  # 🔵 Current live color
+  active_color = "blue"
 }
+
 
 ###########################################
 # S3 BUCKETS (Artifacts + Logs)

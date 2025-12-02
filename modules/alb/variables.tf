@@ -17,3 +17,9 @@ variable "public_subnets" {
 variable "target_instance_id" {
   type = string
 }
+
+# Which color is currently live behind the ALB: "blue" or "green"
+variable "active_color" {
+  type    = string
+  default = "blue"
+}

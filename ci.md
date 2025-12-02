@@ -8,3 +8,4 @@ cache fix
 # trigger
 fix creds
 add ecr
+blue-green step 1
