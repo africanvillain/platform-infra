@@ -2,23 +2,55 @@ name: Terraform CI/CD
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
+    branches:
+      - main
 
 jobs:
   terraform:
+    name: Terraform Pipeline
     runs-on: ubuntu-latest
 
     env:
-      AWS_REGION: us-east-1
+      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      ECR_REPO: ${{ secrets.ECR_REPO }}
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      ########################################
+      # DOCKER BUILD & PUSH TO ECR
+      ########################################
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        working-directory: app
+        run: |
+          docker build -t app:latest .
+
+      - name: Tag Docker image
+        run: |
+          docker tag app:latest $ECR_REPO:latest
+
+      - name: Push Docker image
+        run: |
+          docker push $ECR_REPO:latest
+
+      ########################################
+      # TERRAFORM PIPELINE
+      ########################################
       - name: Clean Terraform cache
+        working-directory: envs/dev
         run: |
           rm -rf .terraform
           rm -f .terraform.lock.hcl
@@ -41,41 +73,6 @@ jobs:
         run: terraform plan
 
       - name: Terraform Apply
+        working-directory: envs/dev
         if: github.ref == 'refs/heads/main'
-        working-directory: envs/dev
         run: terraform apply -auto-approve
-
-
-      ################################################
-      # 🔥 PASTE WAS HERE: Terraform Outputs
-      ################################################
-
-      - name: Terraform Output
-        id: tf_output
-        working-directory: envs/dev
-        run: echo "ecr_repo=$(terraform output -raw ecr_repo)" >> $GITHUB_OUTPUT
-
-
-      ################################################
-      # DOCKER → ECR PUSH SECTION
-      ################################################
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build and Push Docker Image
-        working-directory: app
-        env:
-          REPO: ${{ steps.tf_output.outputs.ecr_repo }}
-        run: |
-          IMAGE_TAG=$(date +%s)
-          docker build -t $REPO:$IMAGE_TAG .
-          docker push $REPO:$IMAGE_TAG
-
