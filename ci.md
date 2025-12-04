@@ -9,3 +9,4 @@ cache fix
 fix creds
 add ecr
 blue-green step 1
+trigger
