@@ -10,7 +10,7 @@ module "vpc" {
 }
 
 ###########################################
-# SUBNETS (FORCED AZ FIX)
+# SUBNETS
 ###########################################
 
 module "subnets" {
@@ -21,9 +21,6 @@ module "subnets" {
   public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
   private_subnet_cidrs = ["10.0.3.0/24", "10.0.4.0/24"]
 }
-
-
-
 
 ###########################################
 # NETWORKING (IGW, NAT, Routes)
@@ -50,19 +47,31 @@ module "security_groups" {
 }
 
 ###########################################
-# PRIVATE EC2 INSTANCE
+# EC2 BLUE
 ###########################################
 
-module "ec2" {
+module "ec2_blue" {
   source = "../../modules/ec2"
 
-  env               = "dev"
+  env               = "dev-blue"
   private_subnet_id = module.subnets.private_subnets[0]
   ec2_sg_id         = module.security_groups.private_sg_id
 }
 
 ###########################################
-# BASTION HOST (PUBLIC)
+# EC2 GREEN
+###########################################
+
+module "ec2_green" {
+  source = "../../modules/ec2"
+
+  env               = "dev-green"
+  private_subnet_id = module.subnets.private_subnets[1]
+  ec2_sg_id         = module.security_groups.private_sg_id
+}
+
+###########################################
+# BASTION
 ###########################################
 
 module "bastion" {
@@ -74,25 +83,28 @@ module "bastion" {
 }
 
 ###########################################
-# APPLICATION LOAD BALANCER
+# APPLICATION LOAD BALANCER (BLUE/GREEN)
 ###########################################
 
 module "alb" {
   source = "../../modules/alb"
 
-  env                = "dev"
-  vpc_id             = module.vpc.vpc_id
-  alb_sg_id          = module.security_groups.public_sg_id
-  public_subnets     = module.subnets.public_subnets
-  target_instance_id = module.ec2.instance_id
+  env            = "dev"
+  vpc_id         = module.vpc.vpc_id
+  alb_sg_id      = module.security_groups.public_sg_id
+  public_subnets = module.subnets.public_subnets
 
-  # 🔵 Current live color
+  # BLUE/GREEN TARGETS
+  blue_target_id  = module.ec2_blue.instance_id
+  green_target_id = module.ec2_green.instance_id
+
+  # Which environment is live?
   active_color = "blue"
 }
 
 
 ###########################################
-# S3 BUCKETS (Artifacts + Logs)
+# S3 BUCKETS
 ###########################################
 
 module "artifacts_bucket" {
@@ -113,9 +125,8 @@ module "logs_bucket" {
   expiration_days = 30
 }
 
-
 ###########################################
-# ECR (for Docker images)
+# ECR
 ###########################################
 
 module "ecr" {

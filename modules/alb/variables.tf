@@ -14,11 +14,15 @@ variable "public_subnets" {
   type = list(string)
 }
 
-variable "target_instance_id" {
+variable "blue_target_id" {
   type = string
 }
 
-# Which color is currently live behind the ALB: "blue" or "green"
+variable "green_target_id" {
+  type = string
+}
+
+# "blue" or "green"
 variable "active_color" {
   type    = string
   default = "blue"

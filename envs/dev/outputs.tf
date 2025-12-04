@@ -27,16 +27,30 @@ output "bastion_id" {
   value = module.bastion.bastion_id
 }
 
-###########################################
-# EC2 APP INSTANCE
-###########################################
-output "ec2_instance_id" {
-  value = module.ec2.instance_id
+#############################################
+# BLUE EC2 OUTPUTS
+#############################################
+
+output "ec2_blue_instance_id" {
+  value = module.ec2_blue.instance_id
 }
 
-output "ec2_private_ip" {
-  value = module.ec2.private_ip
+output "ec2_blue_private_ip" {
+  value = module.ec2_blue.private_ip
 }
+
+#############################################
+# GREEN EC2 OUTPUTS
+#############################################
+
+output "ec2_green_instance_id" {
+  value = module.ec2_green.instance_id
+}
+
+output "ec2_green_private_ip" {
+  value = module.ec2_green.private_ip
+}
+
 
 ###########################################
 # ALB
