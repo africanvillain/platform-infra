@@ -22,8 +22,12 @@ variable "green_target_id" {
   type = string
 }
 
-# "blue" or "green"
-variable "active_color" {
-  type    = string
-  default = "blue"
+variable "blue_weight" {
+  type    = number
+  default = 100
+}
+
+variable "green_weight" {
+  type    = number
+  default = 0
 }

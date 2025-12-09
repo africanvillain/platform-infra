@@ -56,6 +56,7 @@ module "ec2_blue" {
   env               = "dev-blue"
   private_subnet_id = module.subnets.private_subnets[0]
   ec2_sg_id         = module.security_groups.private_sg_id
+  key_pair_name     = "devops_kp"
 }
 
 ###########################################
@@ -68,6 +69,7 @@ module "ec2_green" {
   env               = "dev-green"
   private_subnet_id = module.subnets.private_subnets[1]
   ec2_sg_id         = module.security_groups.private_sg_id
+  key_pair_name     = "devops_kp"
 }
 
 ###########################################
@@ -80,6 +82,7 @@ module "bastion" {
   env              = "dev"
   public_subnet_id = module.subnets.public_subnets[0]
   bastion_sg_id    = module.security_groups.bastion_sg_id
+  key_pair_name    = "devops_kp"
 }
 
 ###########################################
@@ -98,10 +101,10 @@ module "alb" {
   blue_target_id  = module.ec2_blue.instance_id
   green_target_id = module.ec2_green.instance_id
 
-  # Which environment is live?
-  active_color = "blue"
+  # Canary rollout weights
+  blue_weight  = 90
+  green_weight = 10
 }
-
 
 ###########################################
 # S3 BUCKETS
