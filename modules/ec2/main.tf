@@ -19,7 +19,7 @@ data "aws_ami" "amazon_linux" {
 }
 
 #############################################
-# IAM ROLE (Container-ready, but optional)
+# IAM ROLE (Do NOT allow replacement)
 #############################################
 
 resource "aws_iam_role" "ec2_role" {
@@ -35,6 +35,10 @@ resource "aws_iam_role" "ec2_role" {
       Action = "sts:AssumeRole"
     }]
   })
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ecr_readonly" {
@@ -48,7 +52,7 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 }
 
 #############################################
-# PRIVATE EC2 SERVER
+# PRIVATE EC2 SERVER (Blue/Green instance)
 #############################################
 
 resource "aws_instance" "server" {
@@ -63,7 +67,7 @@ resource "aws_instance" "server" {
 
   associate_public_ip_address = false
 
-  # 💡 IMPORTANT FIX → Never attempt to "update" EC2 in-place
+  # 💡 IMPORTANT FIX → Avoid “update in-place” errors
   lifecycle {
     create_before_destroy = true
   }

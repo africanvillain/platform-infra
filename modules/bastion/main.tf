@@ -18,6 +18,10 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
+#############################################
+# BASTION INSTANCE
+#############################################
+
 resource "aws_instance" "bastion" {
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = "t3.micro"
@@ -26,10 +30,13 @@ resource "aws_instance" "bastion" {
 
   associate_public_ip_address = true
 
-  # 💡 IMPORTANT FIX
+  # 🚀 FIX 1 — Replace instead of updating in place
   lifecycle {
     create_before_destroy = true
   }
+
+  # 🚀 FIX 2 — Force recreation if userdata changes
+  user_data_replace_on_change = true
 
   metadata_options {
     http_tokens = "required"
