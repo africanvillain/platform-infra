@@ -27,6 +27,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+
+          
       ########################################
       # DOCKER BUILD & PUSH TO ECR
       ########################################
@@ -76,3 +78,6 @@ jobs:
         working-directory: envs/dev
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve
+
+
+        
