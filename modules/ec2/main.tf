@@ -19,6 +19,16 @@ data "aws_ami" "amazon_linux" {
 }
 
 #############################################
+# terraform_data used only for replace_triggered_by
+# This turns var.ecr_image_uri into a "resource-like" thing
+# so Terraform can watch it for changes.
+#############################################
+
+resource "terraform_data" "ecr_image_trigger" {
+  input = var.ecr_image_uri
+}
+
+#############################################
 # IAM ROLE (Do NOT allow replacement)
 #############################################
 
@@ -67,11 +77,18 @@ resource "aws_instance" "server" {
 
   associate_public_ip_address = false
 
-  # 💡 IMPORTANT FIX → Avoid “update in-place” errors
+  #############################################
+  # 🔥 Correct way: recreate EC2 when ecr_image_uri changes
+  #############################################
   lifecycle {
     create_before_destroy = true
+
+    replace_triggered_by = [
+      terraform_data.ecr_image_trigger
+    ]
   }
 
+  # User data: installs Docker + runs image from ECR
   user_data = templatefile("${path.module}/userdata.tpl", {
     ecr_image_uri = var.ecr_image_uri
   })
