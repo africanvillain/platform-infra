@@ -57,7 +57,7 @@ module "ec2_blue" {
   private_subnet_id = module.subnets.private_subnets[0]
   ec2_sg_id         = module.security_groups.private_sg_id
   key_pair_name     = "devops_kp"
-  ecr_image_uri = "144520190518.dkr.ecr.us-east-1.amazonaws.com/dev-app:latest"
+  ecr_image_uri = "144520190518.dkr.ecr.us-east-1.amazonaws.com/dev-app:1765327817"
 
 }
 
@@ -72,7 +72,7 @@ module "ec2_green" {
   private_subnet_id = module.subnets.private_subnets[1]
   ec2_sg_id         = module.security_groups.private_sg_id
   key_pair_name     = "devops_kp"
-  ecr_image_uri = "144520190518.dkr.ecr.us-east-1.amazonaws.com/dev-app:latest"
+  ecr_image_uri = "144520190518.dkr.ecr.us-east-1.amazonaws.com/dev-app:1765327817"
 
 }
 
