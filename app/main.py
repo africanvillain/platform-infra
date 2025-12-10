@@ -3,8 +3,8 @@ from flask import Flask
 app = Flask(__name__)
 
 @app.route("/")
-def index():
-    return "Hello from Alex's Blue/Green app!"
+def hello():
+    return "Hello from Python Docker App! V3 :D"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80)
