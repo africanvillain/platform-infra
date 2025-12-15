@@ -4,8 +4,7 @@
 
 data "aws_ami" "amazon_linux" {
   most_recent = true
-
-  owners = ["amazon"]
+  owners      = ["amazon"]
 
   filter {
     name   = "name"
@@ -19,15 +18,7 @@ data "aws_ami" "amazon_linux" {
 }
 
 #############################################
-# TRIGGER RESOURCE FOR IMAGE CHANGES
-#############################################
-
-resource "terraform_data" "ecr_image_trigger" {
-  input = var.ecr_image_uri
-}
-
-#############################################
-# IAM ROLE (Do NOT allow replacement)
+# IAM ROLE FOR EC2 (ECR PULL ACCESS)
 #############################################
 
 resource "aws_iam_role" "ec2_role" {
@@ -43,10 +34,6 @@ resource "aws_iam_role" "ec2_role" {
       Action = "sts:AssumeRole"
     }]
   })
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_iam_role_policy_attachment" "ecr_readonly" {
@@ -60,7 +47,7 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 }
 
 #############################################
-# PRIVATE EC2 SERVER (BLUE/GREEN INSTANCE)
+# PRIVATE EC2 SERVER (STABLE BLUE/GREEN)
 #############################################
 
 resource "aws_instance" "server" {
@@ -75,16 +62,12 @@ resource "aws_instance" "server" {
 
   associate_public_ip_address = false
 
-  # 🔥 Correct Lifecycle for Docker Image Rolling Releases
+  # ⚠️ EC2 SHOULD BE STABLE — NO IMAGE-BASED REPLACEMENT
   lifecycle {
     create_before_destroy = true
-
-    replace_triggered_by = [
-      terraform_data.ecr_image_trigger
-    ]
   }
 
-  # Userdata reads Docker image URI
+  # Runs ONCE when instance is created
   user_data = templatefile("${path.module}/userdata.tpl", {
     ecr_image_uri = var.ecr_image_uri
   })
